@@ -1,0 +1,19 @@
+{
+    "name": "encounting/jcdh-api",
+    "description": "A basic API wrapper for getting scores and reports from Jefferson County Health Department (Alabama).",
+    "authors": [
+        {
+            "name": "Jeremy Quick",
+            "email": "me@jrquick.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "JcdhApi": "src/"
+        }
+    }
+}
