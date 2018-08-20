@@ -55,7 +55,7 @@ class JcdhApi {
 
     private function _getLatLng($address) {
         $prepAddr = str_replace(' ', '+', $address);
-        $geocode = file_get_contents('https://maps.google.com/maps/api/geocode/json?address=' . $prepAddr . '&sensor=false&key=AIzaSyAXIcHCTRrm5KLBVtsF_q5Hj5vYeAlfWqI');
+        $geocode = file_get_contents('https://maps.google.com/maps/api/geocode/json?address=' . $prepAddr . '&sensor=false&key=');
         $output = json_decode($geocode);
 
         return $output->results[0]->geometry->location;
