@@ -1,11 +1,12 @@
 <?php
-namespace Encounting\DolBls\Models;
+namespace Encounting\Jcdh\Models;
 
 /**
  * @property number               score
- * @property number               permit_no
+ * @property number               establishment_number
  * @property string               name
  * @property string               address
  * @property string               date
+ * @property number               number_of_units
  */
-class JcdhTanning {}
+class JcdhHotel {}

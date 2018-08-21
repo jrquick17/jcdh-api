@@ -1,14 +1,13 @@
 <?php
-namespace Encounting\JcdhApi;
+namespace Encounting\Jcdh;
 
-use Encounting\DolBls\Models\JcdhCommunalLiving;
-use Encounting\DolBls\Models\JcdhDeduction;
-use Encounting\DolBls\Models\JcdhFood;
-use Encounting\DolBls\Models\JcdhHotel;
-use Encounting\DolBls\Models\JcdhPool;
-use Encounting\DolBls\Models\JcdhTanning;
+use Encounting\Jcdh\Models\JcdhCommunalLiving;
+use Encounting\Jcdh\Models\JcdhDeduction;
+use Encounting\Jcdh\Models\JcdhFood;
+use Encounting\Jcdh\Models\JcdhHotel;
+use Encounting\Jcdh\Models\JcdhPool;
+use Encounting\Jcdh\Models\JcdhTanning;
 
-use function Encounting\Services\str_get_html;
 use SimpleXMLElement;
 
 /**

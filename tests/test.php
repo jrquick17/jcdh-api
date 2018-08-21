@@ -1,9 +1,9 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Encounting\DolBls\DolBlsApi;
+use Encounting\Jcdh\JcdhApi;
 
-$api = new DolBlsApi();
+$api = new JcdhApi();
 
 $results = $api->getSurveys();
 if ($results) {

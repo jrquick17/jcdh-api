@@ -1,5 +1,5 @@
 <?php
-namespace Encounting\DolBls\Models;
+namespace Encounting\Jcdh\Models;
 
 /**
  * @property number value
