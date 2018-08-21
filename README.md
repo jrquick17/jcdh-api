@@ -2,16 +2,143 @@
 
 [See a demo here](https://www.jcdh.jrquick.com)
 
-## Code Example
+## Code Examples
 
 ##### Create Instance of API Wrapper
 ```php
-$api = new JcdhApi(JcdhApi::OUTPUT_JSON);
+$api = new JcdhApi(JcdhOutput::JSON);
 ```
 
 ##### Get food scores
 ```php
-$results = $api->getScores(JcdhApi:TYPE_FOOD);
+$results = $api->getScores(JcdhTypes:FOOD);
+```
+
+```php
+$results = $api->getFoodScores(JcdhTypes:FOOD);
+```
+
+##### Get food scores starting with A, B, or C
+```php
+$results = $api->getFoodScores('ABC');
+```
+
+##### Get multiple types of scores
+```php
+$results = $api->getScores("${JcdhTypes:COMMUNAL_LIVING},${JcdhTypes:FOOD},${JcdhTypes:POOL}");
+```
+
+## Output Examples
+
+##### Communal Living Output
+```json
+[
+  {
+    "score":     "88",
+    "date":      "04/11/1990",
+    "name":      "Artificial Homes",
+    "address":   "1300 Mardis Drive BIRMINGHAM 35235",
+    "location": {
+      "lat": 22.1414424,
+      "lng": -44.4124124
+    },
+    "deductions": [
+      // See deduction output example
+    ]
+  }
+]
+```
+
+##### Food Output
+```json
+[
+  {
+    "permit_no":  "615",
+    "score":      "96",
+    "name":       "Fake Cinemas",
+    "date":       "04/11/1990",
+    "address":    "1303 Decatur HWY GARDENDALE 35071",
+    "smoke_free": true,
+    "location": {
+      "lat": 33.6579989,
+      "lng": -86.8112498
+    },
+    "deductions": [
+      // See deduction output example
+    ]
+  }
+]
+```
+
+##### Hotel Output
+```json
+[
+  {
+    "score":                "53",
+    "name":                 "Not Real, But Really Crummy Inne",
+    "date":                 "04/11/1990",
+    "address":              "12 19th St S BIRMINGHAM 35205",
+    "establishment_number": "5245235",
+    "number_of_units":      "13",
+    "location": {
+      "lat": -33.424242,
+      "lng": 53.525525
+    },
+    "deductions": [
+      // See deduction output example
+    ]
+  }
+]
+```
+
+##### Pool Output
+```json
+[
+  {
+    "score":     "88",
+    "date":      "04/11/1990",
+    "name":      "Pretend Pool Party",
+    "address":   "1212 Taco Bell DR CLAY 35235",
+    "type":      "public",
+    "location": {
+      "lat": 24.435252,
+      "lng": 55.352552
+    },
+    "deductions": [
+      // See deduction output example
+    ]
+  }
+]
+```
+
+##### Pool Output
+```json
+[
+  {
+    "score":     "88",
+    "date":      "04/11/1990",
+    "name":      "Fake Orange Tanners",
+    "address":   "1600 Pennsylvania AVE CLAY 35235",
+    "permit_no": "232",
+    "location": {
+      "lat": -55.435252,
+      "lng": 55.352552
+    },
+    "deductions": [
+      // See deduction output example
+    ]
+  }
+]
+```
+
+###### Deduction/Reports Output 
+```json
+{
+    "value":              "4",
+    "compliance_number":  "2-102.11(B)",
+    "compliance_details": "Keep food-contact surfaces of cooking equipment (grills, fryers, etc.) and pans free of encrusted grease deposits and other soil accumulations.",
+    "notes":              "Popcorn lid inside popcorn popper has heavy grease residue."
+  }
 ```
 
 ## Motivation
