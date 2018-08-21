@@ -464,22 +464,22 @@ class JcdhApi {
      * @return JcdhFood[]
      */
     public function getFoodScores($letter = false) {
-        return $this->_getTypeScores(JcdhTypes::FOOD, $letter);
+        return $this->getScores(JcdhTypes::FOOD, $letter);
     }
 
     public function getHotelScores($letter = false) {
-        return $this->_getTypeScores(JcdhTypes::HOTEL, $letter);
+        return $this->getScores(JcdhTypes::HOTEL, $letter);
     }
 
     public function getPoolScores($letter = false) {
-        return $this->_getTypeScores(JcdhTypes::POOL, $letter);
+        return $this->getScores(JcdhTypes::POOL, $letter);
     }
 
-    private function getTanningScores($letter = false) {
-        return $this->_getTypeScores(JcdhTypes::TANNING, $letter);
+    public function getTanningScores($letter = false) {
+        return $this->getScores(JcdhTypes::TANNING, $letter);
     }
 
-    public function getScores($types = JcdhTypes::FOOD) {
+    public function getScores($types = JcdhTypes::FOOD, $letters = false) {
         if (is_string($types)) {
             $types = explode(',', $types);
         }
@@ -509,7 +509,11 @@ class JcdhApi {
             if ($function) {
                 $scores[$type] = [];
 
-                foreach ($this->_getLetters() as $letter) {
+                if ($letters === false || (is_array($letters) && count($letters) > 0)) {
+                    $letters = $this->_getLetters();
+                }
+
+                foreach ($letters as $letter) {
                     $moreScores = $this->$function($letter);
 
                     $scores[$types] = array_merge($scores[$types], $moreScores);
