@@ -14,7 +14,7 @@ function response($response) {
 }
 
 function handle() {
-    $api = new JcdhApi(array_key_exists('output', $_GET) ? $_GET['output'] : JcdhApi::JSON);
+    $api = new JcdhApi(array_key_exists('output', $_GET) ? $_GET['output'] : JcdhApi::OUTPUT_JSON);
 
     $response = $api->getScores(array_key_exists('types', $_GET) ? $_GET['types'] : JcdhApi::TYPE_FOOD);
 

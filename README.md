@@ -6,7 +6,7 @@
 
 ##### Create Instance of API Wrapper
 ```php
-$api = new JcdhApi($keys);
+$api = new JcdhApi(JcdhApi::OUTPUT_JSON);
 ```
 
 ##### Get food scores

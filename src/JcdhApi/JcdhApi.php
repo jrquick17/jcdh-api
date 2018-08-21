@@ -15,8 +15,6 @@ use SimpleXMLElement;
  * I belong to a class
  */
 class JcdhApi {
-    const BASE_URL = 'https://api.bls.gov/publicAPI/v2/';
-
     const REQUEST_FAIL = 'REQUEST_NOT_PROCESSED';
     const REQUEST_SUCCESS = 'REQUEST_SUCCESS';
 
@@ -26,8 +24,8 @@ class JcdhApi {
     const TYPE_POOL = 'pool';
     const TYPE_TANNING = 'tanning';
 
-    const JSON = 'json';
-    const XML = 'xml';
+    const OUTPUT_JSON = 'json';
+    const OUTPUT_XML = 'xml';
 
     private $_errors = false;
 
@@ -324,9 +322,9 @@ class JcdhApi {
      * @return void
      */
     private function _setUse($use) {
-        if (is_string($use) && strtolower($use) === JcdhApi::JSON) {
+        if (is_string($use) && strtolower($use) === JcdhApi::OUTPUT_JSON) {
             $this->_useJson = true;
-        } else if (is_string($use) && strtolower($use) === JcdhApi::XML) {
+        } else if (is_string($use) && strtolower($use) === JcdhApi::OUTPUT_XML) {
             $this->_useXml = true;
         }
     }
