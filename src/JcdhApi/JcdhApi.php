@@ -27,6 +27,16 @@ class JcdhApi {
     const OUTPUT_JSON = 'json';
     const OUTPUT_XML = 'xml';
 
+    const URL_COMMUNAL_LIVING_SCORES = 'https://webapps.jcdh.org/scores/ehcl/communallivingscores.aspx';
+    const URL_FOOD_SCORES = 'https://webapps.jcdh.org/scores/ehfs/foodservicescores.aspx';
+    const URL_HOTEL_SCORES = 'https://webapps.jcdh.org/scores/ehhls/hotellodgingscores.aspx';
+    const URL_POOL_SCORES = 'https://webapps.jcdh.org/scores/ehps/poolscores.aspx';
+    const URL_TANNING_SCORES = 'https://webapps.jcdh.org/scores/ehts/tanningscores.aspx';
+
+    const URL_GOOGLE_GEOCODE = 'https://maps.google.com/maps/api/geocode/json';
+
+    private $_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
     private $_errors = false;
 
     private $_useJson = false;
@@ -54,7 +64,7 @@ class JcdhApi {
 
     private function _getLatLng($address) {
         $prepAddr = str_replace(' ', '+', $address);
-        $geocode = file_get_contents('https://maps.google.com/maps/api/geocode/json?address=' . $prepAddr . '&sensor=false&key=');
+        $geocode = file_get_contents(self::URL_GOOGLE_GEOCODE.'?address=' . $prepAddr . '&sensor=false&key=');
         $output = json_decode($geocode);
 
         return $output->results[0]->geometry->location;
@@ -62,7 +72,7 @@ class JcdhApi {
 
     private function _getCommunalLivingScores() {
         $html = $this->_request(
-            'https://webapps.jcdh.org/scores/ehcl/communallivingscores.aspx'
+            self::URL_COMMUNAL_LIVING_SCORES
         );
 
         $scores = [];
@@ -92,7 +102,7 @@ class JcdhApi {
 
     private function _getFoodScores() {
         $html = $this->_request(
-            'https://webapps.jcdh.org/scores/ehfs/foodservicescores.aspx'
+            self::URL_FOOD_SCORES
         );
 
         $scores = [];
@@ -127,7 +137,7 @@ class JcdhApi {
 
     private function _getHotelScores() {
         $html = $this->_request(
-            'https://webapps.jcdh.org/scores/ehhls/hotellodgingscores.aspx'
+            self::URL_HOTEL_SCORES
         );
 
         $scores = [];
@@ -160,7 +170,7 @@ class JcdhApi {
 
     private function _getPoolScores() {
         $html = $this->_request(
-            'https://webapps.jcdh.org/scores/ehps/poolscores.aspx'
+            self::URL_POOL_SCORES
         );
 
         $scores = [];
@@ -191,7 +201,7 @@ class JcdhApi {
 
     private function _getTanningScores() {
         $html = $this->_request(
-            'https://webapps.jcdh.org/scores/ehts/tanningscores.aspx'
+            self::URL_TANNING_SCORES
         );
 
         $scores = [];
@@ -261,6 +271,10 @@ class JcdhApi {
         }
 
         return $deductions;
+    }
+
+    private function _getLetters() {
+        return explode('', $this->_LETTERS);
     }
 
     private function _processResults($results) {
