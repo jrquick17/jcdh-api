@@ -7,7 +7,8 @@ use Encounting\DolBls\Models\JcdhFood;
 use Encounting\DolBls\Models\JcdhHotel;
 use Encounting\DolBls\Models\JcdhPool;
 use Encounting\DolBls\Models\JcdhTanning;
-use function Encounting\Vendor\str_get_html;
+
+use function Encounting\Services\str_get_html;
 use SimpleXMLElement;
 
 /**
