@@ -718,3 +718,4 @@ class JcdhApi {
 
 // TODO: Add key manager for Google Geocode
 // TODO: Include lat, long it geocode key is provided
+// TODO: Get old results too when available
