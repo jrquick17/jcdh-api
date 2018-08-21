@@ -10,7 +10,8 @@ use Encounting\Jcdh\Models\JcdhFood;
 use Encounting\Jcdh\Models\JcdhHotel;
 use Encounting\Jcdh\Models\JcdhPool;
 use Encounting\Jcdh\Models\JcdhTanning;
-
+use Encounting\Jcdh\Models\JcdhType;
+use simple_html_dom_node;
 use SimpleXMLElement;
 
 /**
@@ -35,6 +36,13 @@ class JcdhApi {
         $this->_setUse($use);
     }
 
+    /**
+     * Build the URL for requesting a specific type
+     *
+     * @param JcdhTypes $type
+     * @param string    $letter
+     * @return bool|string
+     */
     private function _buildUrl($type, $letter) {
         $url = false;
 
@@ -74,6 +82,13 @@ class JcdhApi {
         $this->_setErrors(false);
     }
 
+    /**
+     * Convert html to JcdhCommunalLiving
+     *
+     * @param simple_html_dom_node[] $tds
+     *
+     * @return bool|JcdhCommunalLiving
+     */
     private function _convertToCommunalLiving($tds) {
         $communal = false;
 
@@ -95,6 +110,13 @@ class JcdhApi {
         return $communal;
     }
 
+    /**
+     * Convert html to JcdhFood
+     *
+     * @param simple_html_dom_node[] $tds
+     *
+     * @return bool|JcdhFood
+     */
     private function _convertToFood($tds) {
         $food = false;
 
@@ -121,6 +143,13 @@ class JcdhApi {
         return $food;
     }
 
+    /**
+     * Convert html to JcdhHotel
+     *
+     * @param simple_html_dom_node[] $tds
+     *
+     * @return bool|JcdhHotel
+     */
     private function _convertToHotel($tds) {
         $hotel = false;
 
@@ -146,6 +175,13 @@ class JcdhApi {
         return $hotel;
     }
 
+    /**
+     * Convert html to JcdhPool
+     *
+     * @param simple_html_dom_node[] $tds
+     *
+     * @return bool|JcdhPool
+     */
     private function _convertToPool($tds) {
         $pool = false;
 
@@ -169,6 +205,13 @@ class JcdhApi {
         return $pool;
     }
 
+    /**
+     * Convert html to JcdhTanning
+     *
+     * @param simple_html_dom_node[] $tds
+     *
+     * @return bool|JcdhTanning
+     */
     private function _convertToTanning($tds) {
         $tanning = false;
 
@@ -191,10 +234,18 @@ class JcdhApi {
         return $tanning;
     }
 
+    /**
+     * Get the value of input by input id
+     *
+     * @param simple_html_dom_node $html
+     * @param string               $id
+     *
+     * @return bool|mixed
+     */
     private function _findById($html, $id) {
         $returnVar = false;
 
-        $results = $html->find('#'.$id);
+        $results = $html->find('input#'.$id);
         if (is_array($results) && count($results) > 0) {
             $input = $results[0];
 
@@ -209,6 +260,14 @@ class JcdhApi {
         return $returnVar;
     }
 
+    /**
+     * Get the event target from html
+     *
+     * @param simple_html_dom_node $html
+     * @param JcdhTypes            $type
+     *
+     * @return bool|mixed|string
+     */
     private function _getEventTarget($html, $type) {
         $eventTarget = $this->_findById($html, '__EVENTTARGET');
 
@@ -241,6 +300,14 @@ class JcdhApi {
         return $eventTarget;
     }
 
+    /**
+     * Get the event validation from html
+     *
+     * @param simple_html_dom_node $html
+     * @param JcdhTypes            $type
+     *
+     * @return bool|mixed
+     */
     private function _getEventValidation($html, $type) {
         $eventValidation = $this->_findById($html, '__EVENTVALIDATION');
 
@@ -251,6 +318,13 @@ class JcdhApi {
         return $eventValidation;
     }
 
+    /**
+     * Get the latitude and longitude from an address
+     *
+     * @param string $address
+     *
+     * @return mixed
+     */
     private function _getLatLng($address) {
         $prepAddr = str_replace(' ', '+', $address);
         $geocode = file_get_contents(JcdhUrls::GOOGLE_GEOCODE.'?address=' . $prepAddr . '&sensor=false&key=');
@@ -259,10 +333,23 @@ class JcdhApi {
         return $output->results[0]->geometry->location;
     }
 
+    /**
+     * Get an array of all alpha characters
+     *
+     * @return string[]
+     */
     private function _getLetters() {
         return str_split($this->_LETTERS);
     }
 
+    /**
+     * Get the number of available pages from html
+     *
+     * @param simple_html_dom_node $html
+     * @param JcdhTypes            $type
+     *
+     * @return int
+     */
     private function _getPageCount($html, $type) {
         $pages = [];
 
@@ -287,7 +374,15 @@ class JcdhApi {
         return $count;
     }
 
-    private function _getTypeScores($type = JcdhTypes::FOOD, $letter = false) {
+    /**
+     * Generic function for retrieving scores
+     *
+     * @param JcdhTypes   $type
+     * @param string|bool $letter
+     *
+     * @return JcdhType[]
+     */
+    private function _getTypeScores($type, $letter = false) {
         $url = $this->_buildUrl($type, $letter);
 
         $page = 0;
@@ -340,6 +435,14 @@ class JcdhApi {
         return $scores;
     }
 
+    /**
+     * Get the view state from the html
+     *
+     * @param simple_html_dom_node $html
+     * @param JcdhTypes            $type
+     *
+     * @return bool|mixed
+     */
     private function _getViewState($html, $type) {
         $viewState = $this->_findById($html, '__VIEWSTATE');
 
@@ -350,6 +453,14 @@ class JcdhApi {
         return $viewState;
     }
 
+    /**
+     * Get the view state generator from html
+     *
+     * @param simple_html_dom_node $html
+     * @param JcdhTypes            $type
+     *
+     * @return bool|mixed
+     */
     private function _getViewStateGenerator($html, $type) {
         $viewStateGenerator = $this->_findById($html, '__VIEWSTATEGENERATOR');
 
@@ -360,6 +471,13 @@ class JcdhApi {
         return $viewStateGenerator;
     }
 
+    /**
+     * Convert the results to the expected output
+     *
+     * @param mixed $results
+     *
+     * @return mixed|string
+     */
     private function _processResults($results) {
         if ($this->_useJson) {
             $results = json_encode($results);
@@ -448,10 +566,24 @@ class JcdhApi {
         }
     }
 
+    /**
+     * Split the name from the address
+     *
+     * @param string $string
+     *
+     * @return array[]|false|string[]
+     */
     private function _splitNameAddress($string) {
         return preg_split('/\n|\r\n?/', $string);
     }
 
+    /**
+     * Get an array of food scores, all of the letter passed in or the most recent if $letter is false
+     *
+     * @param string|bool $letter
+     *
+     * @return JcdhCommunalLiving[]|mixed|string
+     */
     public function getCommunalLivingScores($letter = false) {
         return $this->_getTypeScores(JcdhTypes::COMMUNAL_LIVING, $letter);
     }
@@ -461,24 +593,53 @@ class JcdhApi {
      *
      * @param string|bool $letter
      *
-     * @return JcdhFood[]
+     * @return JcdhFood[]|mixed|string
      */
     public function getFoodScores($letter = false) {
         return $this->getScores(JcdhTypes::FOOD, $letter);
     }
 
+    /**
+     * Get an array of hotel scores, all of the letter passed in or the most recent if $letter is false
+     *
+     * @param string|bool $letter
+     *
+     * @return JcdhHotel[]|mixed|string
+     */
     public function getHotelScores($letter = false) {
         return $this->getScores(JcdhTypes::HOTEL, $letter);
     }
 
+    /**
+     * Get an array of pool scores, all of the letter passed in or the most recent if $letter is false
+     *
+     * @param string|bool $letter
+     *
+     * @return JcdhPool[]|mixed|string
+     */
     public function getPoolScores($letter = false) {
         return $this->getScores(JcdhTypes::POOL, $letter);
     }
 
+    /**
+     * Get an array of tanning scores, all of the letter passed in or the most recent if $letter is false
+     *
+     * @param string|bool $letter
+     *
+     * @return JcdhTanning[]|mixed|string
+     */
     public function getTanningScores($letter = false) {
         return $this->getScores(JcdhTypes::TANNING, $letter);
     }
 
+    /**
+     * Get the scores for a range any children of JcdhType
+     *
+     * @param string|JcdhTypes $types
+     * @param string|bool      $letters
+     *
+     * @return JcdhType|mixed|string
+     */
     public function getScores($types = JcdhTypes::FOOD, $letters = false) {
         if (is_string($types)) {
             $types = explode(',', $types);
@@ -524,6 +685,13 @@ class JcdhApi {
         return $this->_processResults($scores);
     }
 
+    /**
+     * Get a food report based on the permitNo
+     *
+     * @param string $permitNo
+     *
+     * @return mixed
+     */
     public function getReport($permitNo) {
 //        TODO: Should work for all types
         return $this->_getFoodReport($permitNo);
