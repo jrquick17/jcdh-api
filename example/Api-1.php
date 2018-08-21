@@ -1,4 +1,6 @@
 <?php
+namespace Encounting\Example;
+
 use Encounting\JcdhApi\JcdhApi;
 
 function error($error) {
