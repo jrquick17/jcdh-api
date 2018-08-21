@@ -191,6 +191,24 @@ class JcdhApi {
         return $tanning;
     }
 
+    private function _findById($html, $id) {
+        $returnVar = false;
+
+        $results = $html->find('#'.$id);
+        if (is_array($results) && count($results) > 0) {
+            $input = $results[0];
+
+            if (is_array($input->attr)) {
+                $attributes = $input->attr;
+                if (array_key_exists('value', $attributes)) {
+                    $returnVar = $attributes['value'];
+                }
+            }
+        }
+
+        return $returnVar;
+    }
+
     private function _getEventTarget($html, $type) {
         $eventTarget = $this->_findById($html, '__EVENTTARGET');
 
@@ -223,22 +241,14 @@ class JcdhApi {
         return $eventTarget;
     }
 
-    private function _findById($html, $id) {
-        $returnVar = false;
+    private function _getEventValidation($html, $type) {
+        $eventValidation = $this->_findById($html, '__EVENTVALIDATION');
 
-        $results = $html->find('#'.$id);
-        if (is_array($results) && count($results) > 0) {
-            $input = $results[0];
-
-            if (is_array($input->attr)) {
-                $attributes = $input->attr;
-                if (array_key_exists('value', $attributes)) {
-                    $returnVar = $attributes['value'];
-                }
-            }
+        if ($eventValidation === false) {
+            error_log('Unable to find the event validation for: '.$type);
         }
 
-        return $returnVar;
+        return $eventValidation;
     }
 
     private function _getLatLng($address) {
@@ -247,6 +257,10 @@ class JcdhApi {
         $output = json_decode($geocode);
 
         return $output->results[0]->geometry->location;
+    }
+
+    private function _getLetters() {
+        return str_split($this->_LETTERS);
     }
 
     private function _getPageCount($html, $type) {
@@ -324,20 +338,6 @@ class JcdhApi {
         } while ($page <= $pageCount);
 
         return $scores;
-    }
-
-    private function _getEventValidation($html, $type) {
-        $eventValidation = $this->_findById($html, '__EVENTVALIDATION');
-
-        if ($eventValidation === false) {
-            error_log('Unable to find the event validation for: '.$type);
-        }
-
-        return $eventValidation;
-    }
-
-    private function _getLetters() {
-        return str_split($this->_LETTERS);
     }
 
     private function _getViewState($html, $type) {
