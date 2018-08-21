@@ -117,9 +117,17 @@
         function request() {
             var data = getGet();
 
-            $.get('example/api.php?' + data).then(
+            $.get('ExampleApi.php?' + data).then(
                 function(response) {
                     displayResponse(response);
+                },
+                function(response) {
+                    var error = response;
+                    if (typeof error.statusText !== 'undefined') {
+                        error = error.statusText;
+                    }
+
+                    console.log(error);
                 }
             );
         }
