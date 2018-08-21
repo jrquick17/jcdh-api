@@ -117,7 +117,7 @@
         function request() {
             var data = getGet();
 
-            $.get('api.php?' + data).then(
+            $.get('example/api.php?' + data).then(
                 function(response) {
                     displayResponse(response);
                 }
