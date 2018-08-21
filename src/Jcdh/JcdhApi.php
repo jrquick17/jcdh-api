@@ -14,9 +14,6 @@ use SimpleXMLElement;
  * I belong to a class
  */
 class JcdhApi {
-    const REQUEST_FAIL = 'REQUEST_NOT_PROCESSED';
-    const REQUEST_SUCCESS = 'REQUEST_SUCCESS';
-
     const TYPE_COMMUNAL_LIVING = 'communal';
     const TYPE_FOOD = 'food';
     const TYPE_HOTEL = 'hotel';
@@ -37,18 +34,6 @@ class JcdhApi {
     const EVENT_TARGET_HOTEL = 'gvFoodScores';
     const EVENT_TARGET_POOL = 'gvFoodScores';
     const EVENT_TARGET_TANNING = 'gvFoodScores';
-
-    const EVENT_VALIDATION_COMMUNAL_LIVING = 'gvFoodScores';
-    const EVENT_VALIDATION_FOOD = '\'/wEdAAlmnKzTfO+xh+qbhreLa0C3yl6TejLOUKUZ8Y9kTykFa5+I/HPZ86NEZcbXwR9jxA7msDRYuZWmPMEu0d+94igePYooppvH2PzZ2BoJoTrJKKJo+s/l+97RrfDL3JdcYysMT7kLOdxk9pikDqPtCWwjF5AOA1D09yc0cAmRHJBCCZX1wu7rL64lwdAute68Jh5rGjDaU5llTFWa1e/bMTmESCBNDv41wE2a6f1Vc0bZMw==\'';
-    const EVENT_VALIDATION_HOTEL = 'gvFoodScores';
-    const EVENT_VALIDATION_POOL = 'gvFoodScores';
-    const EVENT_VALIDATION_TANNING = 'gvFoodScores';
-
-    const VIEW_STATE_GENERATOR_COMMUNAL_LIVING = 'C440D02D';
-    const VIEW_STATE_GENERATOR_FOOD = '93ED4CD7';
-    const VIEW_STATE_GENERATOR_HOTEL = 'C440D02D';
-    const VIEW_STATE_GENERATOR_POOL = 'C440D02D';
-    const VIEW_STATE_GENERATOR_TANNING = 'C440D02D';
 
     const URL_GOOGLE_GEOCODE = 'https://maps.google.com/maps/api/geocode/json';
 
