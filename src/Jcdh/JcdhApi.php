@@ -99,182 +99,6 @@ class JcdhApi {
         return $pages;
     }
 
-    private function getCommunalLivingScores() {
-        $html = $this->_request(
-            self::URL_COMMUNAL_LIVING_SCORES
-        );
-
-        $scores = [];
-        foreach($html->find('tr') as $id => $tr) {
-            $tds = $tr->children;
-
-            if (count($tds) === 3 && $tds[0]->plaintext !== 'Score') {
-                $communal = new JcdhCommunalLiving();
-
-                $communal->score = $tds[0]->plaintext;
-
-                $nameAndAddress = $this->_splitNameAddress($tds[1]->plaintext);
-                $communal->name = trim($nameAndAddress[0]);
-                $communal->address = trim($nameAndAddress[1]);
-
-//                TODO:
-//                $business->location = _getLatLng($business->address);
-
-                $communal->date = $tds[2]->plaintext;
-
-                $scores[] = $communal;
-            }
-        }
-
-        return $scores;
-    }
-
-    /**
-     * Get an array of food scores, all of the letter passed in or the most recent if $letter is false
-     *
-     * @param string|bool $letter
-     *
-     * @return JcdhFood[]
-     */
-    private function getFoodScores($letter = false) {
-        $url = $this->_buildUrl(self::URL_FOOD_SCORES, $letter);
-
-        $page = 0;
-        $pageCount = 0;
-
-        $scores = [];
-
-        do {
-            $html = $this->_request($url, ++$page);
-
-            if ($pageCount === 0) {
-                $pageCount = $this->_getPageCount($html, 'MainContent_gvFoodScores');
-            }
-
-            foreach ($html->find('tr') as $id => $tr) {
-                $tds = $tr->children;
-
-                if (count($tds) === 5 && $tds[0]->plaintext !== 'PermitNbr') {
-                    $food = new JcdhFood();
-
-                    $food->permit_no = $tds[0]->plaintext;
-                    $food->score = $tds[1]->plaintext;
-
-                    $nameAndAddress = $this->_splitNameAddress($tds[2]->plaintext);
-                    $food->name = trim($nameAndAddress[0]);
-                    $food->address = trim($nameAndAddress[1]);
-
-//                TODO:
-//                $business->location = _getLatLng($business->address);
-
-                    $food->date = $tds[3]->plaintext;
-
-                    $food->smoke_free = $tds[4] === 'Y';
-
-                    $food->deductions = null;
-
-                    $scores[] = $food;
-                }
-            }
-        } while ($page <= $pageCount);
-
-        return $scores;
-    }
-
-    private function getHotelScores() {
-        $html = $this->_request(
-            self::URL_HOTEL_SCORES
-        );
-
-        $scores = [];
-        foreach($html->find('tr') as $id => $tr) {
-            $tds = $tr->children;
-            if (count($tds) === 5 && $tds[0]->plaintext !== 'EstabNbr') {
-                $hotel = new JcdhHotel();
-
-                $hotel->establishment_number = $tds[0]->plaintext;
-
-                $hotel->score = $tds[1]->plaintext;
-
-                $nameAndAddress = $this->_splitNameAddress($tds[2]->plaintext);
-                $hotel->name = trim($nameAndAddress[0]);
-                $hotel->address = trim($nameAndAddress[1]);
-
-//                TODO
-//                $business->location = getLatLng($business->address);
-
-                $hotel->date = $tds[3]->plaintext;
-
-                $hotel->number_of_units = $tds[4]->plaintext;
-
-                $scores[] = $hotel;
-            }
-        }
-
-        return $scores;
-    }
-
-    private function getPoolScores() {
-        $html = $this->_request(
-            self::URL_POOL_SCORES
-        );
-
-        $scores = [];
-        foreach($html->find('tr') as $id => $tr) {
-            $tds = $tr->children;
-            if (count($tds) === 4 && $tds[0]->plaintext !== 'Score') {
-                $business = new JcdhPool();
-
-                $business->score = $tds[0]->plaintext;
-
-                $business->type = $tds[1]->plaintext;
-
-                $nameAndAddress = $this->_splitNameAddress($tds[2]->plaintext);
-                $business->name = trim($nameAndAddress[0]);
-                $business->address = trim($nameAndAddress[1]);
-
-//                TODO
-//                $business->location = getLatLng($business->address);
-
-                $business->date = $tds[3]->plaintext;
-
-                $scores[] = $business;
-            }
-        }
-
-        return $scores;
-    }
-
-    private function getTanningScores() {
-        $html = $this->_request(
-            self::URL_TANNING_SCORES
-        );
-
-        $scores = [];
-        foreach($html->find('tr') as $id => $tr) {
-            $tds = $tr->children;
-            if (count($tds) === 4 && $tds[0]->plaintext !== 'PermitNbr') {
-                $business = new JcdhTanning();
-
-                $business->permit_no = $tds[0]->plaintext;
-                $business->score = $tds[1]->plaintext;
-
-                $nameAndAddress = preg_split('/\n|\r\n?/', $tds[2]->plaintext);
-                $business->name = trim($nameAndAddress[0]);
-                $business->address = trim($nameAndAddress[1]);
-
-//                TODO
-//                $business->location = getLatLng($business->address);
-
-                $business->date = $tds[3]->plaintext;
-
-                $scores[] = $business;
-            }
-        }
-
-        return $scores;
-    }
-
     private function _getFoodReport($permitNo) {
         // TODO: Refactor and make work
         $deductions = [];
@@ -413,6 +237,186 @@ class JcdhApi {
 
     private function _splitNameAddress($string) {
         return preg_split('/\n|\r\n?/', $string);
+    }
+
+    public function getCommunalLivingScores() {
+        $html = $this->_request(
+            self::URL_COMMUNAL_LIVING_SCORES
+        );
+
+        $scores = [];
+        foreach($html->find('tr') as $id => $tr) {
+            $tds = $tr->children;
+
+            if (count($tds) === 3 && $tds[0]->plaintext !== 'Score') {
+                $communal = new JcdhCommunalLiving();
+
+                $communal->score = $tds[0]->plaintext;
+
+                $nameAndAddress = $this->_splitNameAddress($tds[1]->plaintext);
+                $communal->name = trim($nameAndAddress[0]);
+                $communal->address = trim($nameAndAddress[1]);
+
+//                TODO:
+//                $business->location = _getLatLng($business->address);
+
+                $communal->date = $tds[2]->plaintext;
+
+                $scores[] = $communal;
+            }
+        }
+
+        return $scores;
+    }
+
+    /**
+     * Get an array of food scores, all of the letter passed in or the most recent if $letter is false
+     *
+     * @param string|bool $letter
+     *
+     * @return JcdhFood[]
+     */
+    public function getFoodScores($letter = false) {
+        $url = $this->_buildUrl(self::URL_FOOD_SCORES, $letter);
+
+        $page = 0;
+        $pageCount = 0;
+
+        $scores = [];
+
+        do {
+            $html = $this->_request($url, ++$page);
+
+            if ($pageCount === 0) {
+                $pageCount = $this->_getPageCount($html, 'MainContent_gvFoodScores');
+            }
+
+            foreach ($html->find('tr') as $id => $tr) {
+                $tds = $tr->children;
+
+                if (count($tds) === 5 && $tds[0]->plaintext !== 'PermitNbr') {
+                    $food = new JcdhFood();
+
+                    $food->permit_no = $tds[0]->plaintext;
+                    $food->score = $tds[1]->plaintext;
+
+                    $nameAndAddress = $this->_splitNameAddress($tds[2]->plaintext);
+                    $food->name = trim($nameAndAddress[0]);
+                    $food->address = trim($nameAndAddress[1]);
+
+//                TODO:
+//                $business->location = _getLatLng($business->address);
+
+                    $food->date = $tds[3]->plaintext;
+
+                    $food->smoke_free = $tds[4] === 'Y';
+
+                    $food->deductions = null;
+
+                    $scores[] = $food;
+                }
+            }
+        } while ($page <= $pageCount);
+
+        return $scores;
+    }
+
+    private function _getViewStateGenerator() {
+
+    }
+
+    public function getHotelScores() {
+        $html = $this->_request(
+            self::URL_HOTEL_SCORES
+        );
+
+        $scores = [];
+        foreach($html->find('tr') as $id => $tr) {
+            $tds = $tr->children;
+            if (count($tds) === 5 && $tds[0]->plaintext !== 'EstabNbr') {
+                $hotel = new JcdhHotel();
+
+                $hotel->establishment_number = $tds[0]->plaintext;
+
+                $hotel->score = $tds[1]->plaintext;
+
+                $nameAndAddress = $this->_splitNameAddress($tds[2]->plaintext);
+                $hotel->name = trim($nameAndAddress[0]);
+                $hotel->address = trim($nameAndAddress[1]);
+
+//                TODO
+//                $business->location = getLatLng($business->address);
+
+                $hotel->date = $tds[3]->plaintext;
+
+                $hotel->number_of_units = $tds[4]->plaintext;
+
+                $scores[] = $hotel;
+            }
+        }
+
+        return $scores;
+    }
+
+    public function getPoolScores() {
+        $html = $this->_request(
+            self::URL_POOL_SCORES
+        );
+
+        $scores = [];
+        foreach($html->find('tr') as $id => $tr) {
+            $tds = $tr->children;
+            if (count($tds) === 4 && $tds[0]->plaintext !== 'Score') {
+                $business = new JcdhPool();
+
+                $business->score = $tds[0]->plaintext;
+
+                $business->type = $tds[1]->plaintext;
+
+                $nameAndAddress = $this->_splitNameAddress($tds[2]->plaintext);
+                $business->name = trim($nameAndAddress[0]);
+                $business->address = trim($nameAndAddress[1]);
+
+//                TODO
+//                $business->location = getLatLng($business->address);
+
+                $business->date = $tds[3]->plaintext;
+
+                $scores[] = $business;
+            }
+        }
+
+        return $scores;
+    }
+
+    private function getTanningScores() {
+        $html = $this->_request(
+            self::URL_TANNING_SCORES
+        );
+
+        $scores = [];
+        foreach($html->find('tr') as $id => $tr) {
+            $tds = $tr->children;
+            if (count($tds) === 4 && $tds[0]->plaintext !== 'PermitNbr') {
+                $business = new JcdhTanning();
+
+                $business->permit_no = $tds[0]->plaintext;
+                $business->score = $tds[1]->plaintext;
+
+                $nameAndAddress = preg_split('/\n|\r\n?/', $tds[2]->plaintext);
+                $business->name = trim($nameAndAddress[0]);
+                $business->address = trim($nameAndAddress[1]);
+
+//                TODO
+//                $business->location = getLatLng($business->address);
+
+                $business->date = $tds[3]->plaintext;
+
+                $scores[] = $business;
+            }
+        }
+
+        return $scores;
     }
 
     public function getScores($types = self::TYPE_FOOD) {
