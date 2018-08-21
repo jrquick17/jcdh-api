@@ -715,3 +715,6 @@ class JcdhApi {
         return !is_bool($this->_errors);
     }
 }
+
+// TODO: Add key manager for Google Geocode
+// TODO: Include lat, long it geocode key is provided
