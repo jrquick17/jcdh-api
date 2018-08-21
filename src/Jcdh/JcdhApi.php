@@ -1,8 +1,11 @@
 <?php
 namespace Encounting\Jcdh;
 
+use Encounting\Jcdh\Enums\JcdhEventTargets;
+use Encounting\Jcdh\Enums\JcdhOutputs;
+use Encounting\Jcdh\Enums\JcdhTypes;
+use Encounting\Jcdh\Enums\JcdhUrls;
 use Encounting\Jcdh\Models\JcdhCommunalLiving;
-use Encounting\Jcdh\Models\JcdhDeduction;
 use Encounting\Jcdh\Models\JcdhFood;
 use Encounting\Jcdh\Models\JcdhHotel;
 use Encounting\Jcdh\Models\JcdhPool;
@@ -14,29 +17,6 @@ use SimpleXMLElement;
  * I belong to a class
  */
 class JcdhApi {
-    const TYPE_COMMUNAL_LIVING = 'communal';
-    const TYPE_FOOD = 'food';
-    const TYPE_HOTEL = 'hotel';
-    const TYPE_POOL = 'pool';
-    const TYPE_TANNING = 'tanning';
-
-    const OUTPUT_JSON = 'json';
-    const OUTPUT_XML = 'xml';
-
-    const URL_COMMUNAL_LIVING_SCORES = 'https://webapps.jcdh.org/scores/ehcl/communallivingscores.aspx';
-    const URL_FOOD_SCORES = 'https://webapps.jcdh.org/scores/ehfs/foodservicescores.aspx';
-    const URL_HOTEL_SCORES = 'https://webapps.jcdh.org/scores/ehhls/hotellodgingscores.aspx';
-    const URL_POOL_SCORES = 'https://webapps.jcdh.org/scores/ehps/poolscores.aspx';
-    const URL_TANNING_SCORES = 'https://webapps.jcdh.org/scores/ehts/tanningscores.aspx';
-
-    const EVENT_TARGET_COMMUNAL_LIVING = 'gvFoodScores';
-    const EVENT_TARGET_FOOD = 'gvFoodScores';
-    const EVENT_TARGET_HOTEL = 'gvFoodScores';
-    const EVENT_TARGET_POOL = 'gvFoodScores';
-    const EVENT_TARGET_TANNING = 'gvFoodScores';
-
-    const URL_GOOGLE_GEOCODE = 'https://maps.google.com/maps/api/geocode/json';
-
     private $_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     private $_errors = false;
@@ -59,20 +39,20 @@ class JcdhApi {
         $url = false;
 
         switch ($type) {
-            case self::TYPE_COMMUNAL_LIVING:
-                $url = self::URL_COMMUNAL_LIVING_SCORES;
+            case JcdhTypes::COMMUNAL_LIVING:
+                $url = JcdhUrls::COMMUNAL_LIVING_SCORES;
                 break;
-            case self::TYPE_FOOD:
-                $url = self::URL_FOOD_SCORES;
+            case JcdhTypes::FOOD:
+                $url = JcdhUrls::FOOD_SCORES;
                 break;
-            case self::TYPE_HOTEL:
-                $url = self::URL_HOTEL_SCORES;
+            case JcdhTypes::HOTEL:
+                $url = JcdhUrls::HOTEL_SCORES;
                 break;
-            case self::TYPE_POOL:
-                $url = self::URL_POOL_SCORES;
+            case JcdhTypes::POOL:
+                $url = JcdhUrls::POOL_SCORES;
                 break;
-            case self::TYPE_TANNING:
-                $url = self::URL_TANNING_SCORES;
+            case JcdhTypes::TANNING:
+                $url = JcdhUrls::TANNING_SCORES;
                 break;
             default:
                 error_log('Unable to get the url for: ' . $type);
@@ -216,20 +196,20 @@ class JcdhApi {
 
         if ($eventTarget === false) {
             switch($type) {
-                case self::TYPE_COMMUNAL_LIVING:
-                    $eventTarget = self::EVENT_TARGET_COMMUNAL_LIVING;
+                case JcdhTypes::COMMUNAL_LIVING:
+                    $eventTarget = JcdhEventTargets::COMMUNAL_LIVING;
                     break;
-                case self::TYPE_FOOD:
-                    $eventTarget = self::EVENT_TARGET_FOOD;
+                case JcdhTypes::FOOD:
+                    $eventTarget = JcdhEventTargets::FOOD;
                     break;
-                case self::TYPE_HOTEL:
-                    $eventTarget = self::EVENT_TARGET_HOTEL;
+                case JcdhTypes::HOTEL:
+                    $eventTarget = JcdhEventTargets::HOTEL;
                     break;
-                case self::TYPE_POOL:
-                    $eventTarget = self::EVENT_TARGET_POOL;
+                case JcdhTypes::POOL:
+                    $eventTarget = JcdhEventTargets::POOL;
                     break;
-                case self::TYPE_TANNING:
-                    $eventTarget = self::EVENT_TARGET_TANNING;
+                case JcdhTypes::TANNING:
+                    $eventTarget = JcdhEventTargets::TANNING;
                     break;
                 default:
                     error_log('Unable to find the event target for: '.$type);
@@ -263,7 +243,7 @@ class JcdhApi {
 
     private function _getLatLng($address) {
         $prepAddr = str_replace(' ', '+', $address);
-        $geocode = file_get_contents(self::URL_GOOGLE_GEOCODE.'?address=' . $prepAddr . '&sensor=false&key=');
+        $geocode = file_get_contents(JcdhUrls::GOOGLE_GEOCODE.'?address=' . $prepAddr . '&sensor=false&key=');
         $output = json_decode($geocode);
 
         return $output->results[0]->geometry->location;
@@ -293,7 +273,7 @@ class JcdhApi {
         return $count;
     }
 
-    private function _getTypeScores($type = self::TYPE_FOOD, $letter = false) {
+    private function _getTypeScores($type = JcdhTypes::FOOD, $letter = false) {
         $url = $this->_buildUrl($type, $letter);
 
         $page = 0;
@@ -317,19 +297,19 @@ class JcdhApi {
                     $item = false;
 
                     switch ($type) {
-                        case self::TYPE_COMMUNAL_LIVING:
+                        case JcdhTypes::COMMUNAL_LIVING:
                             $item = $this->_convertToCommunalLiving($tds);
                             break;
-                        case self::TYPE_FOOD:
+                        case JcdhTypes::FOOD:
                             $item = $this->_convertToFood($tds);
                             break;
-                        case self::TYPE_HOTEL:
+                        case JcdhTypes::HOTEL:
                             $item = $this->_convertToHotel($tds);
                             break;
-                        case self::TYPE_POOL:
+                        case JcdhTypes::POOL:
                             $item = $this->_convertToPool($tds);
                             break;
-                        case self::TYPE_TANNING:
+                        case JcdhTypes::TANNING:
                             $item = $this->_convertToTanning($tds);
                             break;
                         default:
@@ -461,9 +441,9 @@ class JcdhApi {
      * @return void
      */
     private function _setUse($use) {
-        if (is_string($use) && strtolower($use) === JcdhApi::OUTPUT_JSON) {
+        if (is_string($use) && strtolower($use) === JcdhOutputs::JSON) {
             $this->_useJson = true;
-        } else if (is_string($use) && strtolower($use) === JcdhApi::OUTPUT_XML) {
+        } else if (is_string($use) && strtolower($use) === JcdhOutputs::XML) {
             $this->_useXml = true;
         }
     }
@@ -473,7 +453,7 @@ class JcdhApi {
     }
 
     public function getCommunalLivingScores($letter = false) {
-        return $this->_getTypeScores(self::TYPE_COMMUNAL_LIVING, $letter);
+        return $this->_getTypeScores(JcdhTypes::COMMUNAL_LIVING, $letter);
     }
 
     /**
@@ -484,22 +464,22 @@ class JcdhApi {
      * @return JcdhFood[]
      */
     public function getFoodScores($letter = false) {
-        return $this->_getTypeScores(self::TYPE_FOOD, $letter);
+        return $this->_getTypeScores(JcdhTypes::FOOD, $letter);
     }
 
     public function getHotelScores($letter = false) {
-        return $this->_getTypeScores(self::TYPE_HOTEL, $letter);
+        return $this->_getTypeScores(JcdhTypes::HOTEL, $letter);
     }
 
     public function getPoolScores($letter = false) {
-        return $this->_getTypeScores(self::TYPE_POOL, $letter);
+        return $this->_getTypeScores(JcdhTypes::POOL, $letter);
     }
 
     private function getTanningScores($letter = false) {
-        return $this->_getTypeScores(self::TYPE_TANNING, $letter);
+        return $this->_getTypeScores(JcdhTypes::TANNING, $letter);
     }
 
-    public function getScores($types = self::TYPE_FOOD) {
+    public function getScores($types = JcdhTypes::FOOD) {
         if (is_string($types)) {
             $types = explode(',', $types);
         }
@@ -509,19 +489,19 @@ class JcdhApi {
             $function = false;
 
             switch($type) {
-                case self::TYPE_COMMUNAL_LIVING:
+                case JcdhTypes::COMMUNAL_LIVING:
                     $function = 'getCommunalLivingScores';
                     break;
-                case self::TYPE_FOOD:
+                case JcdhTypes::FOOD:
                     $function = 'getFoodScores';
                     break;
-                case self::TYPE_HOTEL:
+                case JcdhTypes::HOTEL:
                     $function = 'getHotelScores';
                     break;
-                case self::TYPE_POOL:
+                case JcdhTypes::POOL:
                     $function = 'getPoolScores';
                     break;
-                case self::TYPE_TANNING:
+                case JcdhTypes::TANNING:
                     $function = 'getTanningScores';
                     break;
             }

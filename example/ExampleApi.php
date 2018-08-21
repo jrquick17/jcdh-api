@@ -1,10 +1,14 @@
 <?php
 namespace Encounting\Example;
 
+use Encounting\Jcdh\Enums\JcdhOutputs;
+use Encounting\Jcdh\Enums\JcdhTypes;
 use Encounting\Jcdh\JcdhApi;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/Jcdh/JcdhApi.php';
+require __DIR__ . '/../src/Jcdh/Enums/JcdhOutputs.php';
+require __DIR__ . '/../src/Jcdh/Enums/JcdhTypes.php';
 
 class ExampleApi {
     public function __construct() {
@@ -24,8 +28,8 @@ class ExampleApi {
     }
 
     function handle() {
-        $output = array_key_exists('output', $_GET) ? $_GET['output'] : JcdhApi::OUTPUT_JSON;
-        $types = array_key_exists('types', $_GET) ? $_GET['types'] : JcdhApi::TYPE_FOOD;
+        $output = array_key_exists('output', $_GET) ? $_GET['output'] : JcdhOutputs::JSON;
+        $types = array_key_exists('types', $_GET) ? $_GET['types'] : JcdhTypes::FOOD;
 
         $api = new JcdhApi($output);
         $response = $api->getScores($types);
