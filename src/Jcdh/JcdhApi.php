@@ -596,7 +596,7 @@ class JcdhApi {
      * @return JcdhFood[]|mixed|string
      */
     public function getFoodScores($letter = false) {
-        return $this->getScores(JcdhTypes::FOOD, $letter);
+        return $this->_getTypeScores(JcdhTypes::FOOD, $letter);
     }
 
     /**
@@ -607,7 +607,7 @@ class JcdhApi {
      * @return JcdhHotel[]|mixed|string
      */
     public function getHotelScores($letter = false) {
-        return $this->getScores(JcdhTypes::HOTEL, $letter);
+        return $this->_getTypeScores(JcdhTypes::HOTEL, $letter);
     }
 
     /**
@@ -618,7 +618,7 @@ class JcdhApi {
      * @return JcdhPool[]|mixed|string
      */
     public function getPoolScores($letter = false) {
-        return $this->getScores(JcdhTypes::POOL, $letter);
+        return $this->_getTypeScores(JcdhTypes::POOL, $letter);
     }
 
     /**
@@ -629,7 +629,7 @@ class JcdhApi {
      * @return JcdhTanning[]|mixed|string
      */
     public function getTanningScores($letter = false) {
-        return $this->getScores(JcdhTypes::TANNING, $letter);
+        return $this->_getTypeScores(JcdhTypes::TANNING, $letter);
     }
 
     /**
