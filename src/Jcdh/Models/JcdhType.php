@@ -6,7 +6,6 @@ namespace Encounting\Jcdh\Models;
  * @property string               name
  * @property string               address
  * @property string               date
- * @property null|JcdhDeduction[] deductions
  */
 class JcdhType {
     public $deductions = [];

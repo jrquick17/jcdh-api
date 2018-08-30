@@ -6,6 +6,7 @@ use Encounting\Jcdh\Enums\JcdhOutputs;
 use Encounting\Jcdh\Enums\JcdhTypes;
 use Encounting\Jcdh\Enums\JcdhUrls;
 use Encounting\Jcdh\Models\JcdhCommunalLiving;
+use Encounting\Jcdh\Models\JcdhDeduction;
 use Encounting\Jcdh\Models\JcdhFood;
 use Encounting\Jcdh\Models\JcdhHotel;
 use Encounting\Jcdh\Models\JcdhPool;
@@ -672,12 +673,14 @@ class JcdhApi {
 
                 if ($letters === false || (is_array($letters) && count($letters) > 0)) {
                     $letters = $this->_getLetters();
+                } else if (is_string($letters)) {
+                    $letters = str_split($letters);
                 }
 
                 foreach ($letters as $letter) {
                     $moreScores = $this->$function($letter);
 
-                    $scores[$types] = array_merge($scores[$types], $moreScores);
+                    $scores[$type] = array_merge($scores[$type], $moreScores);
                 }
             }
         }
@@ -686,15 +689,104 @@ class JcdhApi {
     }
 
     /**
-     * Get a food report based on the permitNo
+     * Get an item's deductions based on the the date, if the date is null then
+     * it will retrieve the most recent
      *
-     * @param string $permitNo
+     * @param JcdhType    $item
+     * @param string|null $date
      *
      * @return mixed
      */
-    public function getReport($permitNo) {
-//        TODO: Should work for all types
-        return $this->_getFoodReport($permitNo);
+    public function getDeductions($item, $date = null) {
+        switch (get_class($item)) {
+            case JcdhFood::class:
+                /** @var JcdhFood $item */
+                $item->deductions = $this->getFoodDeductions($item->permit_no, $date);
+                break;
+            case JcdhHotel::class:
+                /** @var JcdhHotel $item */
+                $item->deductions = $this->getHotelDeductions($item->establishment_number, $date);
+                break;
+            default:
+                break;
+        }
+
+        return $item;
+    }
+
+    /**
+     * Get a food deductions based on the permitNo and the date, if the date is null then
+     * it will retrieve the most recent
+     *
+     * @param string      $permitNo
+     * @param string|null $date
+     *
+     * @return mixed
+     */
+    public function getFoodDeductions($permitNo, $date = null) {
+        $deductions = [];
+
+        $content = file_get_contents('https://webapps.jcdh.org/scores/ehfs/FSSDetails.aspx?PermitNbr='.$permitNo.'&InspNbr=13');
+
+        $html = str_get_html($content);
+
+        $deductionTable = $html->find('#MainContent_TabContainer1_TabPanel1_Score1Ctrl1_GVScoreDetails');
+        if (is_array($deductionTable) && count($deductionTable) > 0) {
+            $deductionTable = $deductionTable[0];
+
+            foreach ($deductionTable->children as $tr) {
+                $tds = $tr->find('td');
+
+                if (is_array($tds) && count($tds) > 0) {
+                    $deduction = new JcdhDeduction();
+                    $deduction->value = $tds[0]->plaintext;
+
+                    $notes = $tds[1]->plaintext;
+
+                    preg_match('/[0-9]{1}-[0-9]+\.[0-9]+(\([A-Z]\))*\s/', $notes,$complianceNumber);
+                    if ($complianceNumber && is_array($complianceNumber) && count($complianceNumber) > 0) {
+                        $complianceNumber = $complianceNumber[0];
+
+                        $deduction->compliance_number = trim($complianceNumber);
+                        $notes = str_replace($deduction->compliance_number, '', $notes);
+                    }
+
+                    $deduction->notes = [];
+
+                    $notes = explode('.', $notes);
+                    foreach ($notes as $i => $note) {
+                        $note = trim($note);
+
+                        if (strlen($note) > 0) {
+                            if ($i === 0) {
+                                $deduction->compliance_details = $note;
+                            } else {
+                                $deduction->notes[] = $note;
+                            }
+                        }
+                    }
+
+                    $deductions[] = $deduction;
+                }
+            }
+        } else {
+            error_log('Unable to find the deduction table.');
+        }
+
+        return $deductions;
+    }
+
+    /**
+     * Get a hotel's deductions based on the establishment number and the date, if the date is null then
+     * it will retrieve the most recent
+     *
+     * @param string      $establishmentNumber
+     * @param string|null $date
+     *
+     * @return mixed
+     */
+    public function getHotelDeductions($establishmentNumber, $date = null) {
+        return [];
     }
 
     /**
@@ -719,3 +811,4 @@ class JcdhApi {
 // TODO: Add key manager for Google Geocode
 // TODO: Include lat, long it geocode key is provided
 // TODO: Get old results too when available
+// TODO: Get deductions based on the date
