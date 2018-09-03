@@ -356,14 +356,19 @@ class JcdhApi {
 
         $eventTarget = $this->_getEventTarget($html, $type);
 
-        $tr = end($html->find('#MainContent_'.$eventTarget.' tr'));
-        foreach ($tr->children as $td) {
-            $page = trim($td->plaintext);
+        $trs = $html->find('#MainContent_'.$eventTarget.' tr');
 
-            if (is_numeric($page)) {
-                $page = intval($page, 10);
+        if (is_array($trs) && count($trs) > 0) {
+            $tr = end($trs);
 
-                $pages[] = $page;
+            foreach ($tr->children as $td) {
+                $page = trim($td->plaintext);
+
+                if (is_numeric($page)) {
+                    $page = intval($page, 10);
+
+                    $pages[] = $page;
+                }
             }
         }
 
