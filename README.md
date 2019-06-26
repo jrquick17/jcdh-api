@@ -2,6 +2,8 @@
 
 [See a demo here](https://www.jcdh.jrquick.com)
 
+* Visit [my website](https://jrquick.com) for me cool stuff!
+
 ## Code Examples
 
 ##### Create Instance of API Wrapper
