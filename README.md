@@ -1,5 +1,7 @@
 ## Synopsis
 
+A PHP wrapper for accessing the Jefferson County Department of Health API (Alabama) for collecting scores and reports on all of the communal living, food, hotels, pools, and tanning salons in the county.
+
 [See a demo here](https://www.jcdh.jrquick.com)
 
 * Visit [my website](https://jrquick.com) for me cool stuff!
